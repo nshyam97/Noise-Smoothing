@@ -2,6 +2,7 @@ import pandas
 import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
 from scipy.ndimage import gaussian_filter
+import plotly.graph_objects as go
 
 mobility_data = pandas.read_csv("applemobilitytrends-2020-04-13.csv")
 
@@ -46,28 +47,28 @@ NZ_driving = transpose_df('New Zealand', 'driving')
 NZ_transit = transpose_df('New Zealand', 'transit')
 
 # Savgol filter for smoothing
-w = savgol_filter(UK_walking['Value'], 7, 1)
-w2 = savgol_filter(US_walking['Value'], 7, 1)
-w3 = savgol_filter(SK_walking['Value'], 7, 1)
-w4 = savgol_filter(NZ_walking['Value'], 7, 1)
+UK_walking = UK_walking.assign(savgol=savgol_filter(UK_walking['Value'], 7, 1))
+US_walking = US_walking.assign(savgol=savgol_filter(US_walking['Value'], 7, 1))
+SK_walking = SK_walking.assign(savgol=savgol_filter(SK_walking['Value'], 7, 1))
+NZ_walking = NZ_walking.assign(savgol=savgol_filter(NZ_walking['Value'], 7, 1))
 
-# plt.plot(UK_walking.index, w, label='UK')
-# plt.plot(US_walking.index, w2, label='US')
-# plt.plot(SK_walking.index, w3, label='SK')
-# plt.plot(NZ_walking.index, w4, label='NZ')
-# plt.legend()
-# plt.show()
+# fig = go.Figure()
+# fig.add_trace(go.Scatter(x=UK_walking.index, y=UK_walking.savgol, name='UK', mode='lines'))
+# fig.add_trace(go.Scatter(x=US_walking.index, y=US_walking.savgol, name='US', mode='lines'))
+# fig.add_trace(go.Scatter(x=SK_walking.index, y=SK_walking.savgol, name='SK', mode='lines'))
+# fig.add_trace(go.Scatter(x=NZ_walking.index, y=NZ_walking.savgol, name='NZ', mode='lines'))
+# fig.show()
 
 # Gaussian Filtering for smoothing
 
-g = gaussian_filter(UK_walking['Value'], sigma=2.5)
-g2 = gaussian_filter(US_walking['Value'], sigma=2.5)
-g3 = gaussian_filter(SK_walking['Value'], sigma=2.5)
-g4 = gaussian_filter(NZ_walking['Value'], sigma=2.5)
+UK_walking = UK_walking.assign(gaussian=gaussian_filter(UK_walking['Value'], sigma=2.5))
+US_walking = US_walking.assign(gaussian=gaussian_filter(US_walking['Value'], sigma=2.5))
+SK_walking = SK_walking.assign(gaussian=gaussian_filter(SK_walking['Value'], sigma=2.5))
+NZ_walking = NZ_walking.assign(gaussian=gaussian_filter(NZ_walking['Value'], sigma=2.5))
 
-plt.plot(UK_walking.index, g, label='UK')
-plt.plot(US_walking.index, g2, label='US')
-plt.plot(SK_walking.index, g3, label='SK')
-plt.plot(NZ_walking.index, g4, label='NZ')
-plt.legend()
-plt.show()
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=UK_walking.index, y=UK_walking.gaussian, name='UK', mode='lines'))
+fig.add_trace(go.Scatter(x=US_walking.index, y=US_walking.gaussian, name='US', mode='lines'))
+fig.add_trace(go.Scatter(x=SK_walking.index, y=SK_walking.gaussian, name='SK', mode='lines'))
+fig.add_trace(go.Scatter(x=NZ_walking.index, y=NZ_walking.gaussian, name='NZ', mode='lines'))
+fig.show()
