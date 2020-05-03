@@ -46,10 +46,10 @@ NZ_driving = transpose_df('New Zealand', 'driving')
 NZ_transit = transpose_df('New Zealand', 'transit')
 
 # Savgol filter for smoothing
-w = savgol_filter(UK_walking['Value'], 31, 4)
-w2 = savgol_filter(US_walking['Value'], 31, 4)
-w3 = savgol_filter(SK_walking['Value'], 31, 4)
-w4 = savgol_filter(NZ_walking['Value'], 31, 4)
+w = savgol_filter(UK_walking['Value'], 7, 1)
+w2 = savgol_filter(US_walking['Value'], 7, 1)
+w3 = savgol_filter(SK_walking['Value'], 7, 1)
+w4 = savgol_filter(NZ_walking['Value'], 7, 1)
 
 # plt.plot(UK_walking.index, w, label='UK')
 # plt.plot(US_walking.index, w2, label='US')
@@ -60,10 +60,10 @@ w4 = savgol_filter(NZ_walking['Value'], 31, 4)
 
 # Gaussian Filtering for smoothing
 
-g = gaussian_filter(UK_walking['Value'], sigma=2)
-g2 = gaussian_filter(US_walking['Value'], sigma=2)
-g3 = gaussian_filter(SK_walking['Value'], sigma=2)
-g4 = gaussian_filter(NZ_walking['Value'], sigma=2)
+g = gaussian_filter(UK_walking['Value'], sigma=2.5)
+g2 = gaussian_filter(US_walking['Value'], sigma=2.5)
+g3 = gaussian_filter(SK_walking['Value'], sigma=2.5)
+g4 = gaussian_filter(NZ_walking['Value'], sigma=2.5)
 
 plt.plot(UK_walking.index, g, label='UK')
 plt.plot(US_walking.index, g2, label='US')
