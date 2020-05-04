@@ -3,8 +3,9 @@ from scipy.signal import savgol_filter
 from scipy.ndimage import gaussian_filter
 import plotly.graph_objects as go
 from statsmodels.tsa.seasonal import seasonal_decompose
+from fbprophet import Prophet
 
-mobility_data = pandas.read_csv("applemobilitytrends-2020-04-13.csv")
+mobility_data = pandas.read_csv("applemobilitytrends.csv")
 
 
 # Function to transpose the data. Currently the date values are columns and so we need to make these rows
@@ -14,7 +15,7 @@ def transpose_df(region_name, transportation):
     df = mobility_data[(mobility_data['region'] == region_name) &
                        (mobility_data['transportation_type'] == transportation)]
     # Drop the geo_type column as it isn't useful anymore
-    df = df.drop(['geo_type'], axis=1)
+    df = df.drop(['geo_type', 'alternative_name'], axis=1)
     # Pivots the dataframe from a wide to a tall format. Move the Date and Values as separate rows and corresponding
     # columns.
     df_t = df.melt(['region', 'transportation_type'], var_name='Date', value_name='Value')
@@ -52,12 +53,12 @@ US_walking = US_walking.assign(savgol=savgol_filter(US_walking['Value'], 7, 1))
 SK_walking = SK_walking.assign(savgol=savgol_filter(SK_walking['Value'], 7, 1))
 NZ_walking = NZ_walking.assign(savgol=savgol_filter(NZ_walking['Value'], 7, 1))
 
-fig = go.Figure()
-fig.add_trace(go.Scatter(x=UK_walking.index, y=UK_walking.savgol, name='UK', mode='lines'))
-fig.add_trace(go.Scatter(x=US_walking.index, y=US_walking.savgol, name='US', mode='lines'))
-fig.add_trace(go.Scatter(x=SK_walking.index, y=SK_walking.savgol, name='SK', mode='lines'))
-fig.add_trace(go.Scatter(x=NZ_walking.index, y=NZ_walking.savgol, name='NZ', mode='lines'))
-fig.show()
+# fig = go.Figure()
+# fig.add_trace(go.Scatter(x=UK_walking.index, y=UK_walking.savgol, name='UK', mode='lines'))
+# fig.add_trace(go.Scatter(x=US_walking.index, y=US_walking.savgol, name='US', mode='lines'))
+# fig.add_trace(go.Scatter(x=SK_walking.index, y=SK_walking.savgol, name='SK', mode='lines'))
+# fig.add_trace(go.Scatter(x=NZ_walking.index, y=NZ_walking.savgol, name='NZ', mode='lines'))
+# fig.show()
 
 # Gaussian Filtering for smoothing
 
@@ -66,12 +67,12 @@ US_walking = US_walking.assign(gaussian=gaussian_filter(US_walking['Value'], sig
 SK_walking = SK_walking.assign(gaussian=gaussian_filter(SK_walking['Value'], sigma=2.5))
 NZ_walking = NZ_walking.assign(gaussian=gaussian_filter(NZ_walking['Value'], sigma=2.5))
 
-fig = go.Figure()
-fig.add_trace(go.Scatter(x=UK_walking.index, y=UK_walking.gaussian, name='UK', mode='lines'))
-fig.add_trace(go.Scatter(x=US_walking.index, y=US_walking.gaussian, name='US', mode='lines'))
-fig.add_trace(go.Scatter(x=SK_walking.index, y=SK_walking.gaussian, name='SK', mode='lines'))
-fig.add_trace(go.Scatter(x=NZ_walking.index, y=NZ_walking.gaussian, name='NZ', mode='lines'))
-fig.show()
+# fig = go.Figure()
+# fig.add_trace(go.Scatter(x=UK_walking.index, y=UK_walking.gaussian, name='UK', mode='lines'))
+# fig.add_trace(go.Scatter(x=US_walking.index, y=US_walking.gaussian, name='US', mode='lines'))
+# fig.add_trace(go.Scatter(x=SK_walking.index, y=SK_walking.gaussian, name='SK', mode='lines'))
+# fig.add_trace(go.Scatter(x=NZ_walking.index, y=NZ_walking.gaussian, name='NZ', mode='lines'))
+# fig.show()
 
 # Seasonal decompose
 UK_walking = UK_walking.assign(seasonal=seasonal_decompose(UK_walking['Value'], model='additive', period=7).trend)
@@ -85,4 +86,6 @@ fig.add_trace(go.Scatter(x=US_walking.index, y=US_walking.seasonal, name='US', m
 fig.add_trace(go.Scatter(x=SK_walking.index, y=SK_walking.seasonal, name='SK', mode='lines'))
 fig.add_trace(go.Scatter(x=NZ_walking.index, y=NZ_walking.seasonal, name='NZ', mode='lines'))
 fig.show()
+
+# FB Prophet
 
